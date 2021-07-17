@@ -15,6 +15,8 @@ class Game {
     // this.pizzaFloorTime = Date.now();
     this.pizzaFloorInterval = 5000;
     this.pizzas = [];
+    this.ratPickedUpPizza = [];
+    this.pigeonPickedUpPizza = [];
     this.pigeonDroppings = [];
     this.pigeonHealth = 1000;
     this.pizzaRatHealth = 1000;
@@ -32,7 +34,11 @@ class Game {
   }
 
   dropDroppings() {
-    const droppings = new PigeonDropping(this, this.pigeon.x, this.pigeon.y);
+    const droppings = new PigeonDropping(
+      this,
+      this.pigeon.x + this.pigeon.width / 2,
+      this.pigeon.y + this.pigeon.height
+    );
     this.pigeonDroppings.push(droppings);
   }
 
@@ -76,6 +82,36 @@ class Game {
     }
   }
 
+  pizzaPickUp() {
+    this.pizzas.forEach((pizza, index) => {
+      if (
+        this.pizzaRat.x + this.pizzaRat.width / 2 >=
+          pizza.x - pizza.width / 2 &&
+        this.pizzaRat.x - this.pizzaRat.width / 2 <= pizza.x + pizza.width / 2
+      ) {
+        this.ratPickedUpPizza.push(pizza);
+        this.pizzas.splice(index, 1);
+      } else if (
+        this.pigeon.x + this.pigeon.width / 2 >= pizza.x - pizza.width / 2 &&
+        this.pigeon.x - this.pigeon.width / 2 <= pizza.x + pizza.width / 2 &&
+        this.pigeon.y + this.pigeon.height / 2 >= pizza.y - pizza.height / 2 &&
+        this.pigeon.y - this.pigeon.height / 2 <= pizza.y + pizza.height / 2 &&
+        pizza.y > this.canvas.height - pizza.height
+      ) {
+        this.pizzas.splice(index, 1);
+        this.pigeonPickedUpPizza.push(pizza);
+      }
+      for (pizza of this.ratPickedUpPizza) {
+        pizza.x = this.pizzaRat.x;
+        pizza.y = this.pizzaRat.y - this.pizzaRat.height;
+      }
+      for (pizza of this.pigeonPickedUpPizza) {
+        pizza.x = this.pigeon.x;
+        pizza.y = this.pigeon.y + this.pigeon.height;
+      }
+    });
+  }
+
   runLogic() {
     this.pizzaRat.runLogic();
     this.pigeon.runLogic();
@@ -84,15 +120,20 @@ class Game {
     for (const pizza of this.pizzas) {
       pizza.runLogic();
     }
-    if (currentTimestamp - this.lastPizzaDropTime > this.pizzaDropInterval) {
+    this.pizzaPickUp();
+
+    if (
+      currentTimestamp - this.lastPizzaDropTime > this.pizzaDropInterval &&
+      this.pizzas.length < 3
+    ) {
       this.dropPizza();
       this.lastPizzaDropTime = currentTimestamp; // drop pizza after certain amount of seconds
     }
     for (const dropping of this.pigeonDroppings) {
       dropping.runLogic();
     }
-
-    this.blackHole();
+    // this.dropDroppings();
+    // this.blackHole();
   }
 
   launchPizza() {}
@@ -127,6 +168,12 @@ class Game {
       this.pigeon.paint();
       for (const pizza of this.pizzas) {
         pizza.paint();
+      }
+      for (const pizzaR of this.ratPickedUpPizza) {
+        pizzaR.paint();
+      }
+      for (const pizzaP of this.pigeonPickedUpPizza) {
+        pizzaP.paint();
       }
       for (const poop of this.pigeonDroppings) {
         poop.paint();

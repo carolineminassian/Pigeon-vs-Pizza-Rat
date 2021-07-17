@@ -3,13 +3,15 @@ class Pigeon extends Player {
     super(game, 0, y);
     this.width = 20;
     this.height = 20;
-    // this.enableControls();
+    this.enableControls();
   }
 
-  // enableControls() {
-  //     window.addEventListener('mousemove', (event) => {
-
-  // }
+  enableControls() {
+    window.addEventListener('mousemove', (event) => {
+      this.x = event.offsetX;
+      this.y = event.offsetY;
+    });
+  }
 
   paint() {
     const context = this.game.context;
