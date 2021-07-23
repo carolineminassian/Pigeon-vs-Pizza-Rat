@@ -16,6 +16,7 @@ class Game {
     this.pizzaFloorInterval = 5000;
     this.pizzas = [];
     this.ratPickedUpPizza = [];
+    this.launchedPizza = [];
     this.pigeonPickedUpPizza = [];
     this.pigeonDroppings = [];
     this.pigeonHealth = 1000;
@@ -87,7 +88,9 @@ class Game {
       if (
         this.pizzaRat.x + this.pizzaRat.width / 2 >=
           pizza.x - pizza.width / 2 &&
-        this.pizzaRat.x - this.pizzaRat.width / 2 <= pizza.x + pizza.width / 2
+        this.pizzaRat.x - this.pizzaRat.width / 2 <=
+          pizza.x + pizza.width / 2 &&
+        this.ratPickedUpPizza.length < 1
       ) {
         this.ratPickedUpPizza.push(pizza);
         this.pizzas.splice(index, 1);
@@ -96,17 +99,18 @@ class Game {
         this.pigeon.x - this.pigeon.width / 2 <= pizza.x + pizza.width / 2 &&
         this.pigeon.y + this.pigeon.height / 2 >= pizza.y - pizza.height / 2 &&
         this.pigeon.y - this.pigeon.height / 2 <= pizza.y + pizza.height / 2 &&
-        pizza.y > this.canvas.height - pizza.height
+        pizza.y > this.canvas.height - pizza.height &&
+        this.pigeonPickedUpPizza.length < 1
       ) {
         this.pizzas.splice(index, 1);
         this.pigeonPickedUpPizza.push(pizza);
       }
       for (pizza of this.ratPickedUpPizza) {
-        pizza.x = this.pizzaRat.x;
-        pizza.y = this.pizzaRat.y - this.pizzaRat.height;
+        pizza.x = this.pizzaRat.x + this.pizzaRat.width / 2 - pizza.width / 2;
+        pizza.y = this.pizzaRat.y - pizza.height;
       }
       for (pizza of this.pigeonPickedUpPizza) {
-        pizza.x = this.pigeon.x;
+        pizza.x = this.pigeon.x + this.pigeon.width / 2 - pizza.width / 2;
         pizza.y = this.pigeon.y + this.pigeon.height;
       }
     });
@@ -122,6 +126,9 @@ class Game {
     }
     this.pizzaPickUp();
 
+    for (const pizzaL of this.launchedPizza) {
+      pizzaL.invertedRunLogic();
+    }
     if (
       currentTimestamp - this.lastPizzaDropTime > this.pizzaDropInterval &&
       this.pizzas.length < 3
@@ -132,11 +139,52 @@ class Game {
     for (const dropping of this.pigeonDroppings) {
       dropping.runLogic();
     }
+    this.checkPigeonHit();
+    this.checkRatHit();
     // this.dropDroppings();
     // this.blackHole();
   }
 
-  launchPizza() {}
+  launchPizza() {
+    for (const pizzaL of this.ratPickedUpPizza) {
+      this.launchedPizza.push(pizzaL);
+      this.ratPickedUpPizza.splice(0, 1);
+    }
+    if (this.launchedPizza.length > 1) {
+      this.launchedPizza.splice(0, 1);
+    }
+  }
+
+  checkPigeonHit() {
+    for (const pizzaL of this.launchedPizza) {
+      if (
+        this.pigeon.x + this.pigeon.width >= pizzaL.x + pizzaL.width &&
+        this.pigeon.x - this.pigeon.width <= pizzaL.x &&
+        this.pigeon.y + this.pigeon.height <= pizzaL.y &&
+        // this.pigeon.y - this.pigeon.height / 2 <=
+        //   pizzaL.y + pizzaL.height / 2 &&
+        pizzaL.y < this.canvas.height - (pizzaL.height + this.pizzaRat.height)
+      ) {
+        this.pigeonHealth -= 50;
+        console.log(this.pigeonHealth);
+      }
+    }
+  }
+
+  checkRatHit() {
+    for (const dropping of this.pigeonDroppings) {
+      if (
+        this.pizzaRat.y + this.pizzaRat.height / 2 >=
+          dropping.y - dropping.height / 2 &&
+        this.pizzaRat.y - this.pizzaRat.height / 2 <=
+          dropping.y + dropping.height / 2 &&
+        dropping.y < this.canvas.height - dropping.height
+      ) {
+        this.pizzaRatHealth -= 50;
+        console.log(this.pizzaRatHealth);
+      }
+    }
+  }
 
   lose() {
     this.running = false;
@@ -171,6 +219,9 @@ class Game {
       }
       for (const pizzaR of this.ratPickedUpPizza) {
         pizzaR.paint();
+      }
+      for (const pizzaL of this.launchedPizza) {
+        pizzaL.paint();
       }
       for (const pizzaP of this.pigeonPickedUpPizza) {
         pizzaP.paint();

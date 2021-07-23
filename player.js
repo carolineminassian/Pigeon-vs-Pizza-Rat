@@ -4,13 +4,13 @@ class Player {
     this.x = x;
     this.y = y;
     this.speedX = 0;
-    // this.speedY = 0;
+    this.speedY = 0;
     // this.accelerationX = 0;
     // this.accelerationY = 0;
   }
 
   runLogic() {
-    const resistance = 0.05;
+    const resistance = 0.1;
 
     /*
     if (this.speedX > 0) {
@@ -20,7 +20,8 @@ class Player {
     }
     */
 
-    this.speedX = this.speedX / (1 + resistance);
+    this.speedX /= 1 + resistance;
+    this.speedY /= 1 + resistance;
 
     // if (this.speedY > 0) {
     //     this.speedY -= resistance;
@@ -29,6 +30,6 @@ class Player {
     // }
 
     this.x += this.speedX;
-    // this.y += this.speedY;
+    this.y += this.speedY;
   }
 }

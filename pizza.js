@@ -18,6 +18,16 @@ class Pizza {
     }
   }
 
+  invertedRunLogic() {
+    if (this.y < 0) {
+      this.speedY = 0;
+      this.y += this.speedY;
+    } else if (this.y < this.game.canvas.height - this.height) {
+      this.speedY += 20;
+      this.y -= this.speedY;
+    }
+  }
+
   paint() {
     const context = this.game.context;
     context.save();

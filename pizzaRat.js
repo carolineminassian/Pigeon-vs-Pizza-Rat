@@ -11,10 +11,10 @@ class PizzaRat extends Player {
       const key = event.code;
       switch (key) {
         case 'ArrowRight':
-          this.speedX = 5;
+          this.speedX = 10;
           break;
         case 'ArrowLeft':
-          this.speedX = -5;
+          this.speedX = -10;
           break;
         case 'Space':
           this.game.launchPizza();

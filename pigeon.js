@@ -1,8 +1,8 @@
 class Pigeon extends Player {
   constructor(game, y) {
     super(game, 0, y);
-    this.width = 20;
-    this.height = 20;
+    this.width = 60;
+    this.height = 60;
     this.enableControls();
   }
 
@@ -10,6 +10,14 @@ class Pigeon extends Player {
     window.addEventListener('mousemove', (event) => {
       this.x = event.offsetX;
       this.y = event.offsetY;
+    });
+    window.addEventListener('keydown', (event) => {
+      const key = event.code;
+      switch (key) {
+        case 'ArrowDown':
+          this.game.dropDroppings();
+          break;
+      }
     });
   }
 
