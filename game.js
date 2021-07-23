@@ -10,17 +10,21 @@ class Game {
     this.running = true;
     this.pizzaRat = new PizzaRat(this, this.canvas.height - 20);
     this.pigeon = new Pigeon(this, 0);
+    this.pigeonNest = new StockPile(this, this.canvas.width - 40, 50);
+    this.ratHole = new StockPile(this, 30, this.canvas.height - 20);
     this.lastPizzaDropTime = Date.now();
     this.pizzaDropInterval = 7000;
     // this.pizzaFloorTime = Date.now();
-    this.pizzaFloorInterval = 5000;
+    this.pizzaFloorInterval = 3000;
     this.pizzas = [];
     this.ratPickedUpPizza = [];
     this.launchedPizza = [];
     this.pigeonPickedUpPizza = [];
     this.pigeonDroppings = [];
-    this.pigeonHealth = 1000;
-    this.pizzaRatHealth = 1000;
+    this.pizzaRatHoard = [];
+    this.pigeonHoard = [];
+    this.pigeonHealth = 500;
+    this.pizzaRatHealth = 500;
     this.loop();
     this.displayScreen('playing');
   }
@@ -116,6 +120,32 @@ class Game {
     });
   }
 
+  pizzaDropOff() {
+    this.ratPickedUpPizza.forEach((pizzaR, index) => {
+      if (
+        pizzaR.x <= this.ratHole.x + this.ratHole.width &&
+        pizzaR.x + pizzaR.width >= this.ratHole.x
+      ) {
+        this.pizzaRatHoard.push(pizzaR);
+        this.pizzaRatHealth += 100;
+        console.log('pizzaRat health: ', this.pizzaRatHealth);
+        this.ratPickedUpPizza.splice(index, 1);
+      }
+    });
+    this.pigeonPickedUpPizza.forEach((pizzaP, index) => {
+      if (
+        pizzaP.x <= this.pigeonNest.x + this.pigeonNest.width &&
+        pizzaP.x + pizzaP.width >= this.pigeonNest.x &&
+        pizzaP.y <= this.pigeonNest.y + this.pigeonNest.height
+      ) {
+        this.pigeonHoard.push(pizzaP);
+        this.pigeonHealth += 100;
+        console.log('pigeon health: ', this.pigeonHealth);
+        this.pigeonPickedUpPizza.splice(index, 1);
+      }
+    });
+  }
+
   runLogic() {
     this.pizzaRat.runLogic();
     this.pigeon.runLogic();
@@ -139,6 +169,9 @@ class Game {
     for (const dropping of this.pigeonDroppings) {
       dropping.runLogic();
     }
+    if (this.pigeonDroppings.length > 2) {
+      this.pigeonDroppings.splice(0, 1);
+    }
     this.checkPigeonHit();
     this.checkRatHit();
     // this.dropDroppings();
@@ -158,32 +191,33 @@ class Game {
   checkPigeonHit() {
     for (const pizzaL of this.launchedPizza) {
       if (
-        this.pigeon.x + this.pigeon.width >= pizzaL.x + pizzaL.width &&
-        this.pigeon.x - this.pigeon.width <= pizzaL.x &&
-        this.pigeon.y + this.pigeon.height <= pizzaL.y &&
+        this.pigeon.x + this.pigeon.width >= pizzaL.x &&
+        this.pigeon.x <= pizzaL.x + pizzaL.width &&
+        this.pigeon.y + this.pigeon.height >= pizzaL.y &&
+        this.pigeon.y <= pizzaL.y &&
         // this.pigeon.y - this.pigeon.height / 2 <=
         //   pizzaL.y + pizzaL.height / 2 &&
         pizzaL.y < this.canvas.height - (pizzaL.height + this.pizzaRat.height)
       ) {
         this.pigeonHealth -= 50;
-        console.log(this.pigeonHealth);
+        console.log('pigeon health: ', this.pigeonHealth);
       }
     }
   }
 
   checkRatHit() {
-    for (const dropping of this.pigeonDroppings) {
+    this.pigeonDroppings.forEach((dropping, index) => {
       if (
-        this.pizzaRat.y + this.pizzaRat.height / 2 >=
-          dropping.y - dropping.height / 2 &&
-        this.pizzaRat.y - this.pizzaRat.height / 2 <=
-          dropping.y + dropping.height / 2 &&
-        dropping.y < this.canvas.height - dropping.height
+        this.pizzaRat.x + this.pizzaRat.width >= dropping.x &&
+        this.pizzaRat.x <= dropping.x + dropping.width &&
+        this.pizzaRat.y <= dropping.y + dropping.height &&
+        this.pizzaRat.y + this.pizzaRat.height >= dropping.y + dropping.height
       ) {
         this.pizzaRatHealth -= 50;
-        console.log(this.pizzaRatHealth);
+        this.pigeonDroppings.splice(index, 1);
+        console.log('pizzaRat health: ', this.pizzaRatHealth);
       }
-    }
+    });
   }
 
   lose() {
@@ -214,6 +248,8 @@ class Game {
     if (this.running) {
       this.pizzaRat.paint();
       this.pigeon.paint();
+      this.ratHole.paint();
+      this.pigeonNest.paint();
       for (const pizza of this.pizzas) {
         pizza.paint();
       }

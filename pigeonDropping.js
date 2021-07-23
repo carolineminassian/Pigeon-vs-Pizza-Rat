@@ -1,3 +1,5 @@
+const GRAVITY2 = 0.2;
+
 class PigeonDropping {
   constructor(game, x, y) {
     this.game = game;
@@ -5,21 +7,20 @@ class PigeonDropping {
     this.y = y;
     this.width = 10;
     this.height = 10;
+    this.speedY = 0;
   }
 
   runLogic() {
-    window.addEventListener('click', () => {
-      if (this.y < this.game.canvas.height - this.height) {
-        this.speedY += GRAVITY;
-        this.y += this.speedY;
-      }
-    });
+    if (this.y + this.height <= this.game.canvas.height) {
+      this.speedY += GRAVITY2;
+      this.y += this.speedY;
+    }
   }
 
   paint() {
     const context = this.game.context;
     context.save();
-    context.fillStyle = 'brown';
+    context.fillStyle = 'green';
     context.fillRect(this.x, this.y, this.width, this.height);
     context.restore();
   }

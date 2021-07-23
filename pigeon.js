@@ -11,13 +11,12 @@ class Pigeon extends Player {
       this.x = event.offsetX;
       this.y = event.offsetY;
     });
-    window.addEventListener('keydown', (event) => {
-      const key = event.code;
-      switch (key) {
-        case 'ArrowDown':
-          this.game.dropDroppings();
-          break;
-      }
+
+    window.addEventListener('click', () => {
+      this.game.dropDroppings();
+    });
+    window.addEventListener('dblclick', () => {
+      this.game.pizzaDropOff();
     });
   }
 
