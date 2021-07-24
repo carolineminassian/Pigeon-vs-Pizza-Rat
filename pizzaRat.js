@@ -3,7 +3,7 @@ rat.src = '/images/rodent-1.0/PNG/32x32/rat.png';
 
 class PizzaRat extends Player {
   constructor(game, y) {
-    super(game, game.canvas.width - 20, y);
+    super(game, 64, y);
     this.width = 64;
     this.height = 64;
     this.enableControls();

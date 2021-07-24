@@ -22,14 +22,6 @@ class Game {
     this.canvas.height = window.innerHeight * 0.95;
     this.pizzaRat = new PizzaRat(this, this.canvas.height - 64);
     this.pigeon = new Pigeon(this, 0);
-    this.pigeonNest = new StockPile(
-      this,
-      this.canvas.width * 0.9,
-      50,
-      nest,
-      this.canvas.width * 0.1,
-      this.canvas.height * 0.1
-    );
     this.ratHole = new StockPile(
       this,
       30,
@@ -38,6 +30,33 @@ class Game {
       this.canvas.width * 0.1,
       this.canvas.height * 0.1
     );
+    if (level <= 1) {
+      this.pigeonNest = new StockPile(
+        this,
+        this.canvas.width * 0.9,
+        50,
+        nest,
+        this.canvas.width * 0.1,
+        this.canvas.height * 0.1
+      );
+    } else {
+      this.pigeonNest = new StockPile(
+        this,
+        Math.floor(Math.random() * (this.canvas.width * 0.9)),
+        50,
+        nest,
+        this.canvas.width * 0.1,
+        this.canvas.height * 0.1
+      );
+      // this.ratHole = new StockPile(
+      //   this,
+      //   Math.floor(Math.random() * (this.canvas.width * 0.9)),
+      //   this.canvas.height * 0.9,
+      //   hole,
+      //   this.canvas.width * 0.1,
+      //   this.canvas.height * 0.1
+      // );
+    }
     this.fps = 120;
     this.frameInterval = 1000 / this.fps;
     this.lastTime = Date.now();
@@ -182,6 +201,11 @@ class Game {
     ) {
       this.dropPizza();
       this.lastPizzaDropTime = currentTimestamp; // drop pizza after certain amount of seconds
+      if (this.level > 1) {
+        this.pigeonNest.x = Math.floor(
+          Math.random() * (this.canvas.width * 0.9)
+        );
+      }
     }
     for (const dropping of this.pigeonDroppings) {
       dropping.runLogic();
