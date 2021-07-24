@@ -10,7 +10,7 @@ class Player {
   }
 
   runLogic() {
-    const resistance = 0.1;
+    const resistance = 0.15;
 
     /*
     if (this.speedX > 0) {

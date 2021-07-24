@@ -38,6 +38,9 @@ class Game {
       this.canvas.width * 0.1,
       this.canvas.height * 0.1
     );
+    this.fps = 120;
+    this.frameInterval = 1000 / this.fps;
+    this.lastTime = Date.now();
     this.lastPizzaDropTime = Date.now();
     this.pizzaDropInterval = 3000;
     this.pizzas = [];
@@ -82,8 +85,13 @@ class Game {
   }
 
   loop() {
-    this.runLogic();
-    this.paint();
+    const now = Date.now(),
+      elapsedTime = now - this.lastTime;
+    if (elapsedTime > this.frameInterval) {
+      this.runLogic();
+      this.paint();
+      this.lastTime = now;
+    }
     if (this.running) {
       window.requestAnimationFrame(() => {
         this.loop();
@@ -98,7 +106,8 @@ class Game {
           pizza.x - pizza.width / 2 &&
         this.pizzaRat.x - this.pizzaRat.width / 2 <=
           pizza.x + pizza.width / 2 &&
-        this.ratPickedUpPizza.length < 1
+        this.ratPickedUpPizza.length < 1 &&
+        pizza.y + pizza.height >= this.pizzaRat.y + this.pizzaRat.height
         // this.ratPickedUpPizza.length < 2
       ) {
         this.ratPickedUpPizza.push(pizza);
@@ -277,27 +286,42 @@ class Game {
   }
 
   paintScore() {
-    this.context.font = '16px sans-serif';
-    this.context.fillStyle = 'white';
+    const fontSize = 28;
+    const pigeonScoreY = 50;
+    const ratScoreY = this.canvas.height - 50;
+    const ratScoreW = this.context.measureText(
+      `Pizza Rat Health: ${this.pizzaRatHealth}`
+    ).width;
+    const pigeonScoreW = this.context.measureText(
+      `Pigeon Health: ${this.pigeonHealth}`
+    ).width;
+    this.context.font = `small-caps ${fontSize}px Prosto One, cursive`;
+    this.context.fillStyle = 'black';
     this.context.fillRect(
       this.canvas.width / 2 - 2,
-      this.canvas.height - 65,
-      185,
-      20
+      ratScoreY - fontSize + 2,
+      ratScoreW + 4,
+      fontSize + 2
     );
-    this.context.fillStyle = 'black';
+    this.context.fillStyle = 'white';
     this.context.fillText(
       `Pizza Rat Health: ${this.pizzaRatHealth}`,
       this.canvas.width / 2,
-      this.canvas.height - 50
+      ratScoreY
+    );
+
+    this.context.fillStyle = 'black';
+    this.context.fillRect(
+      this.canvas.width / 2 - 2,
+      pigeonScoreY - fontSize + 2,
+      pigeonScoreW + 4,
+      fontSize + 2
     );
     this.context.fillStyle = 'white';
-    this.context.fillRect(this.canvas.width / 2 - 2, 34, 165, 20);
-    this.context.fillStyle = 'black';
     this.context.fillText(
       `Pigeon Health: ${this.pigeonHealth}`,
       this.canvas.width / 2,
-      50
+      pigeonScoreY
     );
   }
 
@@ -307,9 +331,9 @@ class Game {
     if (this.running) {
       this.ratHole.paint();
       this.pigeonNest.paint();
+      this.paintScore();
       this.pigeon.paint();
       this.pizzaRat.paint();
-      this.paintScore();
       for (const pizza of this.pizzas) {
         pizza.paint();
       }
