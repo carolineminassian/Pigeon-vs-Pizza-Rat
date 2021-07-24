@@ -6,7 +6,8 @@ class Game {
     this.running = false;
   }
 
-  start() {
+  start(level) {
+    this.level = level;
     this.running = true;
     this.pizzaRat = new PizzaRat(this, this.canvas.height - 20);
     this.pigeon = new Pigeon(this, 0);
@@ -23,8 +24,8 @@ class Game {
     this.pigeonDroppings = [];
     this.pizzaRatHoard = [];
     this.pigeonHoard = [];
-    this.pigeonHealth = 500;
-    this.pizzaRatHealth = 500;
+    this.pigeonHealth = 500 * level;
+    this.pizzaRatHealth = 500 * level;
     this.loop();
     this.displayScreen('playing');
   }
@@ -174,8 +175,16 @@ class Game {
     }
     this.checkPigeonHit();
     this.checkRatHit();
-    // this.dropDroppings();
-    // this.blackHole();
+    if (this.pigeonHealth <= 0) {
+      this.pigeonLose();
+    } else if (this.pizzaRatHealth <= 0) {
+      this.pizzaRatLose();
+    }
+    if (this.pigeonHealth >= 1000 * this.level) {
+      this.pigeonLevelUp();
+    } else if (this.pizzaRatHealth >= 1000 * this.level) {
+      this.pizzaRatLevelUp();
+    }
   }
 
   launchPizza() {
@@ -194,12 +203,11 @@ class Game {
         this.pigeon.x + this.pigeon.width >= pizzaL.x &&
         this.pigeon.x <= pizzaL.x + pizzaL.width &&
         this.pigeon.y + this.pigeon.height >= pizzaL.y &&
-        this.pigeon.y <= pizzaL.y &&
-        // this.pigeon.y - this.pigeon.height / 2 <=
-        //   pizzaL.y + pizzaL.height / 2 &&
+        this.pigeon.y <= pizzaL.y + pizzaL.height &&
         pizzaL.y < this.canvas.height - (pizzaL.height + this.pizzaRat.height)
       ) {
-        this.pigeonHealth -= 50;
+        this.pigeonHealth -= 50 / this.level;
+        this.launchedPizza.splice(0, 1);
         console.log('pigeon health: ', this.pigeonHealth);
       }
     }
@@ -213,15 +221,29 @@ class Game {
         this.pizzaRat.y <= dropping.y + dropping.height &&
         this.pizzaRat.y + this.pizzaRat.height >= dropping.y + dropping.height
       ) {
-        this.pizzaRatHealth -= 50;
+        this.pizzaRatHealth -= 50 / this.level;
         this.pigeonDroppings.splice(index, 1);
         console.log('pizzaRat health: ', this.pizzaRatHealth);
       }
     });
   }
 
-  lose() {
+  pizzaRatLose() {
     this.running = false;
+    this.displayScreen('pizzaRatLost');
+  }
+  pigeonLose() {
+    this.running = false;
+    this.displayScreen('pigeonLost');
+  }
+
+  pigeonLevelUp() {
+    this.running = false;
+    this.displayScreen('pigeonLevelUp');
+  }
+  pizzaRatLevelUp() {
+    this.running = false;
+    this.displayScreen('pizzaRatLevelUp');
   }
 
   clearScreen() {
@@ -242,6 +264,20 @@ class Game {
     }
   }
 
+  paintScore() {
+    this.context.font = '16px sans-serif';
+    this.context.fillText(
+      `Pizza Rat Health: ${this.pizzaRatHealth}`,
+      this.canvas.width / 2,
+      this.canvas.height - 50
+    );
+    this.context.fillText(
+      `Pigeon Health: ${this.pigeonHealth}`,
+      this.canvas.width / 2,
+      50
+    );
+  }
+
   paint() {
     this.clearScreen();
     this.paintBackground();
@@ -250,6 +286,7 @@ class Game {
       this.pigeon.paint();
       this.ratHole.paint();
       this.pigeonNest.paint();
+      this.paintScore();
       for (const pizza of this.pizzas) {
         pizza.paint();
       }

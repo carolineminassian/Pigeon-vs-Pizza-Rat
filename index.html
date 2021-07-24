@@ -14,9 +14,21 @@
     <div class="screen" id="screen-playing" style="display: none">
       <canvas width="500" height="500"></canvas>
     </div>
-    <div class="screen" id="screen-game-over" style="display: none">
-      <h3>game OVER</h3>
+    <div class="screen" id="screen-pigeon-lost" style="display: none">
+      <h3>game OVER, Pizza Rat wins by default</h3>
       <button>Try Again</button>
+    </div>
+    <div class="screen" id="screen-pizzaRat-lost" style="display: none">
+      <h3>game OVER, Pigeon wins by default</h3>
+      <button>Try Again</button>
+    </div>
+    <div class="screen" id="screen-pigeon-level-up" style="display: none">
+      <h3>Pigeon reached ultimate health, go to next level</h3>
+      <button>Next Level</button>
+    </div>
+    <div class="screen" id="screen-pizzaRat-level-up" style="display: none">
+      <h3>Pizza Rat reached ultimate health, go to next level</h3>
+      <button>Next Level</button>
     </div>
     <script src="stockPile.js"></script>
     <script src="pigeonDropping.js"></script>

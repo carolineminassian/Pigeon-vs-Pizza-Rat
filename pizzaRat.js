@@ -15,14 +15,14 @@ class PizzaRat extends Player {
           if (this.x + this.width < this.game.canvas.width - units) {
             this.speedX = units;
           } else {
-            this.speedX = 0;
+            this.x = 0;
           }
           break;
         case 'ArrowLeft':
           if (this.x > units) {
             this.speedX = -units;
           } else {
-            this.speedX = 0;
+            this.x = this.game.canvas.width;
           }
           break;
         case 'Space':
