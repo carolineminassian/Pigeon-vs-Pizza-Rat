@@ -12,7 +12,7 @@ class PizzaRat extends Player {
   enableControls() {
     window.addEventListener('keydown', (event) => {
       const key = event.code;
-      const units = 5;
+      const units = this.game.canvas.width * 0.015;
       switch (key) {
         case 'ArrowRight':
           if (this.x + this.width < this.game.canvas.width - units) {
@@ -32,7 +32,7 @@ class PizzaRat extends Player {
           this.game.launchPizza();
           break;
         case 'ArrowUp':
-          this.game.pizzaDropOff();
+          this.game.pizzaDropOffR();
           break;
       }
     });
@@ -66,8 +66,6 @@ class PizzaRat extends Player {
         this.height
       );
     }
-    // context.fillStyle = 'red';
-    // context.fillRect(this.x, this.y, this.width, this.height);
     context.restore();
   }
 }

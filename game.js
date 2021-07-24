@@ -18,10 +18,26 @@ class Game {
   start(level) {
     this.level = level;
     this.running = true;
+    // this.canvas.width = window.innerWidth * 0.75;
+    // this.canvas.height = window.innerHeight * 0.75;
     this.pizzaRat = new PizzaRat(this, this.canvas.height - 64);
     this.pigeon = new Pigeon(this, 0);
-    this.pigeonNest = new StockPile(this, this.canvas.width - 75, 50, nest);
-    this.ratHole = new StockPile(this, 30, this.canvas.height - 60, hole);
+    this.pigeonNest = new StockPile(
+      this,
+      this.canvas.width * 0.9,
+      50,
+      nest,
+      this.canvas.width * 0.1,
+      this.canvas.height * 0.1
+    );
+    this.ratHole = new StockPile(
+      this,
+      30,
+      this.canvas.height * 0.9,
+      hole,
+      this.canvas.width * 0.1,
+      this.canvas.height * 0.1
+    );
     this.lastPizzaDropTime = Date.now();
     this.pizzaDropInterval = 3000;
     this.pizzas = [];
@@ -40,7 +56,7 @@ class Game {
   dropPizza() {
     const pizza = new Pizza(
       this,
-      Math.floor(Math.random() * this.canvas.width),
+      Math.floor(Math.random() * (this.canvas.width - 64)),
       0
     );
     this.pizzas.push(pizza);
@@ -83,6 +99,7 @@ class Game {
         this.pizzaRat.x - this.pizzaRat.width / 2 <=
           pizza.x + pizza.width / 2 &&
         this.ratPickedUpPizza.length < 1
+        // this.ratPickedUpPizza.length < 2
       ) {
         this.ratPickedUpPizza.push(pizza);
         this.pizzas.splice(index, 1);
@@ -108,7 +125,7 @@ class Game {
     });
   }
 
-  pizzaDropOff() {
+  pizzaDropOffR() {
     this.ratPickedUpPizza.forEach((pizzaR, index) => {
       if (
         pizzaR.x <= this.ratHole.x + this.ratHole.width &&
@@ -120,6 +137,8 @@ class Game {
         this.ratPickedUpPizza.splice(index, 1);
       }
     });
+  }
+  pizzaDropOffP() {
     this.pigeonPickedUpPizza.forEach((pizzaP, index) => {
       if (
         pizzaP.x <= this.pigeonNest.x + this.pigeonNest.width &&
@@ -149,7 +168,8 @@ class Game {
     }
     if (
       currentTimestamp - this.lastPizzaDropTime > this.pizzaDropInterval &&
-      this.pizzas.length < 2
+      this.pizzas.length < 1
+      // this.pizzas.length < 2
     ) {
       this.dropPizza();
       this.lastPizzaDropTime = currentTimestamp; // drop pizza after certain amount of seconds
@@ -240,7 +260,19 @@ class Game {
   paintBackground() {
     this.context.save();
     this.context.globalAlpha = 0.6;
-    this.context.drawImage(subway, 0, 0, 3600 / 5.72, 2861 / 5.72);
+    this.context.drawImage(
+      subway,
+      0,
+      0,
+      3600,
+      2861 - this.canvas.height,
+      0,
+      0,
+      this.canvas.width,
+      this.canvas.height
+      // 3600 / (2861 / this.canvas.height),
+      // 2861 / (2861 / this.canvas.height)
+    );
     this.context.restore();
   }
 
@@ -260,7 +292,7 @@ class Game {
       this.canvas.height - 50
     );
     this.context.fillStyle = 'white';
-    this.context.fillRect(this.canvas.width / 2 - 2, 34, 145, 20);
+    this.context.fillRect(this.canvas.width / 2 - 2, 34, 165, 20);
     this.context.fillStyle = 'black';
     this.context.fillText(
       `Pigeon Health: ${this.pigeonHealth}`,

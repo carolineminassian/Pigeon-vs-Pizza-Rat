@@ -19,7 +19,7 @@ class Pigeon extends Player {
       this.game.dropDroppings();
     });
     window.addEventListener('dblclick', () => {
-      this.game.pizzaDropOff();
+      this.game.pizzaDropOffP();
     });
   }
 
@@ -38,8 +38,7 @@ class Pigeon extends Player {
       this.width,
       this.height
     );
-    // context.fillStyle = 'blue';
-    // context.fillRect(this.x, this.y, this.width, this.height);
+
     context.restore();
   }
 }

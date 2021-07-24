@@ -1,4 +1,4 @@
-const GRAVITY2 = 0.2;
+const GRAVITY2 = 0.3;
 const poop = new Image();
 poop.src = '/images/fallingPoo.png';
 const poopSplat = new Image();

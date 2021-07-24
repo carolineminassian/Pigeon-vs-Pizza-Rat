@@ -34,8 +34,6 @@ class Pizza {
     const context = this.game.context;
     context.save();
     context.drawImage(pizza, this.x, this.y, this.width, this.height);
-    // context.fillStyle = 'orange';
-    // context.fillRect(this.x, this.y, this.width, this.height);
     context.restore();
   }
 }

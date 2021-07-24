@@ -1,11 +1,11 @@
 class StockPile {
-  constructor(game, x, y, image) {
+  constructor(game, x, y, image, width, height) {
     this.game = game;
     this.x = x;
     this.y = y;
     this.image = image;
-    this.width = 60;
-    this.height = 60;
+    this.width = width;
+    this.height = height;
   }
 
   paint() {
