@@ -1,12 +1,14 @@
 const GRAVITY = 0.2;
+const pizza = new Image();
+pizza.src = '/images/pizzaslice.png';
 
 class Pizza {
   constructor(game, x, y) {
     this.game = game;
     this.x = x;
     this.y = y;
-    this.width = 20;
-    this.height = 30;
+    this.width = 64;
+    this.height = 83;
     this.speedY = 0;
     this.speedX = 2;
   }
@@ -31,8 +33,9 @@ class Pizza {
   paint() {
     const context = this.game.context;
     context.save();
-    context.fillStyle = 'orange';
-    context.fillRect(this.x, this.y, this.width, this.height);
+    context.drawImage(pizza, this.x, this.y, this.width, this.height);
+    // context.fillStyle = 'orange';
+    // context.fillRect(this.x, this.y, this.width, this.height);
     context.restore();
   }
 }

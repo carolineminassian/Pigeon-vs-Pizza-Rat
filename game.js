@@ -1,3 +1,12 @@
+const subway = new Image();
+subway.src = '/images/NYCsubway1.jpg';
+
+const nest = new Image();
+nest.src = 'images/pigeonNest.png';
+
+const hole = new Image();
+hole.src = 'images/ratHoleEdit.png';
+
 class Game {
   constructor(canvas, screens) {
     this.canvas = canvas;
@@ -9,12 +18,12 @@ class Game {
   start(level) {
     this.level = level;
     this.running = true;
-    this.pizzaRat = new PizzaRat(this, this.canvas.height - 20);
+    this.pizzaRat = new PizzaRat(this, this.canvas.height - 64);
     this.pigeon = new Pigeon(this, 0);
-    this.pigeonNest = new StockPile(this, this.canvas.width - 40, 50);
-    this.ratHole = new StockPile(this, 30, this.canvas.height - 20);
+    this.pigeonNest = new StockPile(this, this.canvas.width - 75, 50, nest);
+    this.ratHole = new StockPile(this, 30, this.canvas.height - 60, hole);
     this.lastPizzaDropTime = Date.now();
-    this.pizzaDropInterval = 2000;
+    this.pizzaDropInterval = 3000;
     this.pizzas = [];
     this.ratPickedUpPizza = [];
     this.launchedPizza = [];
@@ -90,11 +99,11 @@ class Game {
       }
       for (pizza of this.ratPickedUpPizza) {
         pizza.x = this.pizzaRat.x + this.pizzaRat.width / 2 - pizza.width / 2;
-        pizza.y = this.pizzaRat.y - pizza.height;
+        pizza.y = this.pizzaRat.y - pizza.height / 2;
       }
       for (pizza of this.pigeonPickedUpPizza) {
         pizza.x = this.pigeon.x + this.pigeon.width / 2 - pizza.width / 2;
-        pizza.y = this.pigeon.y + this.pigeon.height;
+        pizza.y = this.pigeon.y + this.pigeon.height / 1.25;
       }
     });
   }
@@ -140,7 +149,7 @@ class Game {
     }
     if (
       currentTimestamp - this.lastPizzaDropTime > this.pizzaDropInterval &&
-      this.pizzas.length < 3
+      this.pizzas.length < 2
     ) {
       this.dropPizza();
       this.lastPizzaDropTime = currentTimestamp; // drop pizza after certain amount of seconds
@@ -184,7 +193,7 @@ class Game {
         this.pigeon.y <= pizzaL.y + pizzaL.height &&
         pizzaL.y < this.canvas.height - (pizzaL.height + this.pizzaRat.height)
       ) {
-        this.pigeonHealth -= 50 / this.level;
+        this.pigeonHealth -= Math.floor(50 / this.level);
         this.launchedPizza.splice(0, 1);
         console.log('pigeon health: ', this.pigeonHealth);
       }
@@ -199,7 +208,7 @@ class Game {
         this.pizzaRat.y <= dropping.y + dropping.height &&
         this.pizzaRat.y + this.pizzaRat.height >= dropping.y + dropping.height
       ) {
-        this.pizzaRatHealth -= 50 / this.level;
+        this.pizzaRatHealth -= Math.floor(50 / this.level);
         this.pigeonDroppings.splice(index, 1);
         console.log('pizzaRat health: ', this.pizzaRatHealth);
       }
@@ -229,26 +238,30 @@ class Game {
   }
 
   paintBackground() {
-    const tileSize = 24;
-    for (let row = 0; row < this.canvas.height / tileSize; row++) {
-      for (let column = 0; column < this.canvas.width / tileSize; column++) {
-        this.context.fillRect(
-          row,
-          column,
-          this.canvas.width / tileSize,
-          this.canvas.height / tileSize
-        );
-      }
-    }
+    this.context.save();
+    this.context.globalAlpha = 0.6;
+    this.context.drawImage(subway, 0, 0, 3600 / 5.72, 2861 / 5.72);
+    this.context.restore();
   }
 
   paintScore() {
     this.context.font = '16px sans-serif';
+    this.context.fillStyle = 'white';
+    this.context.fillRect(
+      this.canvas.width / 2 - 2,
+      this.canvas.height - 65,
+      165,
+      20
+    );
+    this.context.fillStyle = 'black';
     this.context.fillText(
       `Pizza Rat Health: ${this.pizzaRatHealth}`,
       this.canvas.width / 2,
       this.canvas.height - 50
     );
+    this.context.fillStyle = 'white';
+    this.context.fillRect(this.canvas.width / 2 - 2, 34, 145, 20);
+    this.context.fillStyle = 'black';
     this.context.fillText(
       `Pigeon Health: ${this.pigeonHealth}`,
       this.canvas.width / 2,
@@ -260,10 +273,10 @@ class Game {
     this.clearScreen();
     this.paintBackground();
     if (this.running) {
-      this.pizzaRat.paint();
-      this.pigeon.paint();
       this.ratHole.paint();
       this.pigeonNest.paint();
+      this.pigeon.paint();
+      this.pizzaRat.paint();
       this.paintScore();
       for (const pizza of this.pizzas) {
         pizza.paint();

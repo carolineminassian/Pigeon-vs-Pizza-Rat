@@ -1,8 +1,11 @@
+const rat = new Image();
+rat.src = '/images/rodent-1.0/PNG/32x32/rat.png';
+
 class PizzaRat extends Player {
   constructor(game, y) {
     super(game, game.canvas.width - 20, y);
-    this.width = 20;
-    this.height = 20;
+    this.width = 64;
+    this.height = 64;
     this.enableControls();
   }
 
@@ -38,8 +41,33 @@ class PizzaRat extends Player {
   paint() {
     const context = this.game.context;
     context.save();
-    context.fillStyle = 'red';
-    context.fillRect(this.x, this.y, this.width, this.height);
+    if (this.speedX < 0) {
+      context.drawImage(
+        rat,
+        0,
+        96,
+        32,
+        32,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
+    } else {
+      context.drawImage(
+        rat,
+        0,
+        34,
+        32,
+        32,
+        this.x,
+        this.y,
+        this.width,
+        this.height
+      );
+    }
+    // context.fillStyle = 'red';
+    // context.fillRect(this.x, this.y, this.width, this.height);
     context.restore();
   }
 }
