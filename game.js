@@ -14,9 +14,7 @@ class Game {
     this.pigeonNest = new StockPile(this, this.canvas.width - 40, 50);
     this.ratHole = new StockPile(this, 30, this.canvas.height - 20);
     this.lastPizzaDropTime = Date.now();
-    this.pizzaDropInterval = 7000;
-    // this.pizzaFloorTime = Date.now();
-    this.pizzaFloorInterval = 3000;
+    this.pizzaDropInterval = 2000;
     this.pizzas = [];
     this.ratPickedUpPizza = [];
     this.launchedPizza = [];
@@ -46,26 +44,6 @@ class Game {
       this.pigeon.y + this.pigeon.height
     );
     this.pigeonDroppings.push(droppings);
-  }
-
-  blackHole() {
-    //   need to edit it so that black hole only swallows pizza after a certain amount of time
-    const currentTime = Date.now();
-    this.pizzas.forEach((pizza, index) => {
-      if (pizza.y > this.canvas.height - pizza.height) {
-        const pizzaFloorTime = currentTime;
-        if (currentTime - pizzaFloorTime > this.pizzaFloorInterval) {
-          this.pizzas.splice(index, 1);
-        }
-      }
-    });
-    // collect poop at y = canvas.height and pizza at y= canvas.height only after certain amount of seconds
-
-    this.pigeonDroppings.forEach((poop, index) => {
-      if (poop.y === this.canvas.height) {
-        this.pigeonDroppings.splice(index, 1);
-      }
-    });
   }
 
   displayScreen(name) {
