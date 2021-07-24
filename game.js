@@ -18,8 +18,8 @@ class Game {
   start(level) {
     this.level = level;
     this.running = true;
-    // this.canvas.width = window.innerWidth * 0.75;
-    // this.canvas.height = window.innerHeight * 0.75;
+    this.canvas.width = window.innerWidth * 0.75;
+    this.canvas.height = window.innerHeight * 0.95;
     this.pizzaRat = new PizzaRat(this, this.canvas.height - 64);
     this.pigeon = new Pigeon(this, 0);
     this.pigeonNest = new StockPile(
@@ -282,7 +282,7 @@ class Game {
     this.context.fillRect(
       this.canvas.width / 2 - 2,
       this.canvas.height - 65,
-      165,
+      185,
       20
     );
     this.context.fillStyle = 'black';
